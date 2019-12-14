@@ -1,18 +1,19 @@
 import sqlite3
-from PyQt5 import uic
 from PyQt5.QtWidgets import QTableWidgetItem, QPushButton, QSpinBox
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
-
+from addEditCoffeeForm import Ui_MainWindow as addEdit
+from main_1 import Ui_MainWindow as main_window
 
 class DBCoffee(QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
+        self.ui = main_window()
+        self.ui.setupUi(self)
         self.con = sqlite3.connect('coffee.db')
-        self.showAll_b.clicked.connect(self.showAllCoffe)
-        self.add_b.clicked.connect(self.addCofee)
-        self.edit_b.clicked.connect(self.editCofee)
+        self.ui.showAll_b.clicked.connect(self.showAllCoffe)
+        self.ui.add_b.clicked.connect(self.addCofee)
+        self.ui.edit_b.clicked.connect(self.editCofee)
 
     def editCofee(self):
         win = addEditCoffeeFormClass(self, True)
@@ -26,57 +27,58 @@ class DBCoffee(QMainWindow):
         cur = self.con.cursor()
         result = cur.execute(
             '''Select name, stepen, type, cost, val from coffe WHERE id BETWEEN 0 AND 1001''').fetchall()
-        self.tableWidget.setRowCount(len(result) + 1)
-        self.tableWidget.setColumnCount(5)
-        self.tableWidget.setItem(0, 0, QTableWidgetItem('Название'))
-        self.tableWidget.setItem(0, 1, QTableWidgetItem('Степень обжарки'))
-        self.tableWidget.setItem(0, 2, QTableWidgetItem('Молотый/Зерновой'))
-        self.tableWidget.setItem(0, 3, QTableWidgetItem('Цена'))
-        self.tableWidget.setItem(0, 4, QTableWidgetItem('Объём'))
+        self.ui.tableWidget.setRowCount(len(result) + 1)
+        self.ui.tableWidget.setColumnCount(5)
+        self.ui.tableWidget.setItem(0, 0, QTableWidgetItem('Название'))
+        self.ui.tableWidget.setItem(0, 1, QTableWidgetItem('Степень обжарки'))
+        self.ui.tableWidget.setItem(0, 2, QTableWidgetItem('Молотый/Зерновой'))
+        self.ui.tableWidget.setItem(0, 3, QTableWidgetItem('Цена'))
+        self.ui.tableWidget.setItem(0, 4, QTableWidgetItem('Объём'))
         # Заполнили таблицу полученными элементами
         for i, elem in enumerate(result):
             for j, val in enumerate(elem):
-                self.tableWidget.setItem(i + 1, j, QTableWidgetItem(str(val).capitalize()))
-        self.tableWidget.resizeColumnsToContents()
+                self.ui.tableWidget.setItem(i + 1, j, QTableWidgetItem(str(val).capitalize()))
+        self.ui.tableWidget.resizeColumnsToContents()
 
 
 class addEditCoffeeFormClass(QMainWindow):
     def __init__(self, main=None, edit=False):
         super().__init__(main)
-        uic.loadUi('addEditCoffeeForm.ui', self)
+        self.ui = addEdit()
+        self.ui.setupUi(self)
         self.con = sqlite3.connect('coffee.db')
-        self.add.clicked.connect(self.add_m)
-        self.update_.clicked.connect(self.update_m)
+        self.ui.add.clicked.connect(self.add_m)
+        self.ui.update_.clicked.connect(self.update_m)
         if edit:
             self.choseID()
 
     def add_m(self):
         error_find = False
-        name = self.name.text()
-        step = self.step.text()
-        mol_zern = self.mol_zern.text()
-        descr = self.descr.toPlainText()
-        val = self.val.text()
-        cost = self.cost.text()
-        self.errors.setText('')
+        name = self.ui.name.text()
+        step = self.ui.step.text()
+        mol_zern = self.ui.mol_zern.text()
+        descr = self.ui.descr.toPlainText()
+        val = self.ui.val.text()
+        cost = self.ui.cost.text()
+        self.ui.errors.setText('')
         if name == '':
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Название - пустая строка')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Название - пустая строка')
         if not step.isdigit():
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Степень обжарки не числовое значение')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Степень обжарки не числовое значение')
         if not cost.isdigit():
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Цена не числовое значение')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Цена не числовое значение')
         if not val.isdigit():
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Объём не числовое значение')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Объём не числовое значение')
         if cost == '':
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Цена - пустая строка')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Цена - пустая строка')
         if val == '':
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Объём - пустая строка')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Объём - пустая строка')
         if error_find:
             return -1
         cur = self.con.cursor()
@@ -88,52 +90,52 @@ class addEditCoffeeFormClass(QMainWindow):
 
     def update_m(self):
         error_find = False
-        name = self.name.text()
-        step = self.step.text()
-        mol_zern = self.mol_zern.text()
-        descr = self.descr.toPlainText()
-        val = self.val.text()
-        cost = self.cost.text()
-        self.errors.setText('')
+        name = self.ui.name.text()
+        step = self.ui.step.text()
+        mol_zern = self.ui.mol_zern.text()
+        descr = self.ui.descr.toPlainText()
+        val = self.ui.val.text()
+        cost = self.ui.cost.text()
+        self.ui.errors.setText('')
         if name == '':
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Название - пустая строка')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Название - пустая строка')
         if not step.isdigit():
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Степень обжарки не числовое значение')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Степень обжарки не числовое значение')
         if not cost.isdigit():
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Цена не числовое значение')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Цена не числовое значение')
         if not val.isdigit():
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Объём не числовое значение')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Объём не числовое значение')
         if cost == '':
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Цена - пустая строка')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Цена - пустая строка')
         if val == '':
             error_find = True
-            self.errors.setText(self.errors.toPlainText() + '\nError: Объём - пустая строка')
+            self.ui.errors.setText(self.ui.errors.toPlainText() + '\nError: Объём - пустая строка')
         if error_find:
             return -1
         cur = self.con.cursor()
         cur.execute('''UPDATE coffe
                 SET name = ?
-                WHERE id = ?''', (name, int(self.id_l.text())))
+                WHERE id = ?''', (name, int(self.ui.id_l.text())))
         cur.execute('''UPDATE coffe
                         SET stepen = ?
-                        WHERE id = ?''', (step, int(self.id_l.text())))
+                        WHERE id = ?''', (step, int(self.ui.id_l.text())))
         cur.execute('''UPDATE coffe
                 SET type = ?
-                WHERE id = ?''', (mol_zern, int(self.id_l.text())))
+                WHERE id = ?''', (mol_zern, int(self.ui.id_l.text())))
         cur.execute('''UPDATE coffe
                         SET descrip = ?
-                        WHERE id = ?''', (descr, int(self.id_l.text())))
+                        WHERE id = ?''', (descr, int(self.ui.id_l.text())))
         cur.execute('''UPDATE coffe
                         SET cost = ?
-                        WHERE id = ?''', (cost, int(self.id_l.text())))
+                        WHERE id = ?''', (cost, int(self.ui.id_l.text())))
         cur.execute('''UPDATE coffe
                         SET val = ?
-                        WHERE id = ?''', (val, int(self.id_l.text())))
+                        WHERE id = ?''', (val, int(self.ui.id_l.text())))
         self.con.commit()
         self.close()
 
@@ -144,20 +146,20 @@ class addEditCoffeeFormClass(QMainWindow):
             '''Select id from coffe WHERE id BETWEEN 0 AND 1001''').fetchall(), key=lambda u: u[0])[-1][-1]
         win = ChooseID(self, maxx)
         win.show()
-        self.add.setEnabled(False)
-        self.update_.setEnabled(True)
+        self.ui.add.setEnabled(False)
+        self.ui.update_.setEnabled(True)
 
     def editFormSet(self, id):
         cur = self.con.cursor()
         res = cur.execute(
             '''Select * from coffe WHERE id = ?''', (id,)).fetchall()[0]
-        self.id_l.setText(str(id))
-        self.name.setText(res[1])
-        self.step.setText(str(res[2]))
-        self.mol_zern.setText(res[3])
-        self.descr.setText(res[4])
-        self.val.setText(str(res[5]))
-        self.cost.setText(str(res[6]))
+        self.ui.id_l.setText(str(id))
+        self.ui.name.setText(res[1])
+        self.ui.step.setText(str(res[2]))
+        self.ui.mol_zern.setText(res[3])
+        self.ui.descr.setText(res[4])
+        self.ui.val.setText(str(res[5]))
+        self.ui.cost.setText(str(res[6]))
 
 
 class ChooseID(QMainWindow):
