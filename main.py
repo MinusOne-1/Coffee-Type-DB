@@ -5,12 +5,13 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from addEditCoffeeForm import Ui_MainWindow as addEdit
 from main_1 import Ui_MainWindow as main_window
 
+
 class DBCoffee(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = main_window()
         self.ui.setupUi(self)
-        self.con = sqlite3.connect('coffee.db')
+        self.con = sqlite3.connect('data/coffee.db')
         self.ui.showAll_b.clicked.connect(self.showAllCoffe)
         self.ui.add_b.clicked.connect(self.addCofee)
         self.ui.edit_b.clicked.connect(self.editCofee)
@@ -46,7 +47,7 @@ class addEditCoffeeFormClass(QMainWindow):
         super().__init__(main)
         self.ui = addEdit()
         self.ui.setupUi(self)
-        self.con = sqlite3.connect('coffee.db')
+        self.con = sqlite3.connect('data/coffee.db')
         self.ui.add.clicked.connect(self.add_m)
         self.ui.update_.clicked.connect(self.update_m)
         if edit:
